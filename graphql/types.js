@@ -1,5 +1,5 @@
-const { GraphQLObjectType, GraphQLString, GraphQLID } = require("graphql");
-const { User } = require("../models");
+const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } = require("graphql");
+const { User, Post, Comment } = require("../models");
 
 const UserType = new GraphQLObjectType({ //creando tipo de objeto propio
     name: "UserType",
@@ -19,13 +19,38 @@ const UserType = new GraphQLObjectType({ //creando tipo de objeto propio
 const PostType = new GraphQLObjectType({
     name: "PostType",
     description: "tipo de dato de post",
-    fields: {
+    fields: () => ({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
         body: { type: GraphQLString },
         author: {
             type: UserType, resolve(parent, args) {//parent, es el dato que tiene el superior a el, osea en este caso post
                 return User.findById(parent.authorId)
+            }
+        },
+        comments: {
+            type: new GraphQLList(CommentType),
+            resolve(parent) {
+                return Comment.find({ postId: parent.id })
+            }
+        }
+    })
+})
+
+const CommentType = new GraphQLObjectType({
+    name: "CommentType",
+    description: "tipo de dato de comentario",
+    fields: {
+        id: { type: GraphQLID },
+        comment: { type: GraphQLString },
+        user: {
+            type: UserType, async resolve(parent) {
+                return await User.findById(parent.userId)
+            }
+        },
+        post: {
+            type: PostType, async resolve(parent) {
+                return await Post.findById(parent.postId)
             }
         }
     }
@@ -34,5 +59,6 @@ const PostType = new GraphQLObjectType({
 
 module.exports = {
     UserType,
-    PostType
+    PostType,
+    CommentType
 }

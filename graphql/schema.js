@@ -1,8 +1,8 @@
 //schema, que puedo modificar/alterar en la api graphql
 
 const { GraphQLSchema, GraphQLObjectType } = require('graphql');
-const { users, user, posts, post } = require('./queries')
-const { register, login, createPost, updatePost, deletePost } = require('./mutations')
+const { users, user, posts, post, comments, comment } = require('./queries')
+const { deleteComment, register, login, createPost, addComment, updatePost, deletePost, updateComment } = require('./mutations')
 
 const QueryType = new GraphQLObjectType({    //objeto de consultas iniciales
     name: 'QueryType',
@@ -12,7 +12,9 @@ const QueryType = new GraphQLObjectType({    //objeto de consultas iniciales
         users: users,
         user: user,
         posts: posts,
-        post: post
+        post: post,
+        comments: comments,
+        comment: comment
 
     }
 });
@@ -25,7 +27,10 @@ const MutationType = new GraphQLObjectType({
         login: login,
         createPost: createPost,
         updatePost: updatePost,
-        deletePost: deletePost
+        deletePost: deletePost,
+        addComment: addComment,
+        updateComment: updateComment,
+        deleteComment: deleteComment
     }
 })
 
